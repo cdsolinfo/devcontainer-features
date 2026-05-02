@@ -36,18 +36,32 @@ if ! command -v pip3 > /dev/null 2>&1; then
     apt-get install -y python3-pip
 fi
 
+# Upgrade pip to ensure we have a recent version that supports --break-system-packages
+echo "Upgrading pip..."
+pip3 install --upgrade pip
+
+# Try to install with --break-system-packages flag (pip >= 23.3), fall back to without if not supported
+install_with_pip3() {
+    local package="$1"
+    if pip3 install --break-system-packages "$package" 2>/dev/null; then
+        return 0
+    else
+        echo "Installing $package without --break-system-packages flag..."
+        pip3 install "$package"
+        return $?
+    fi
+}
+
 # Install the Keeper Secrets Manager CLI
 if [ "$VERSION" = "latest" ]; then
     echo "Installing latest version of keeper-secrets-manager-cli..."
-    pip3 install --break-system-packages keeper-secrets-manager-cli \
-        || pip3 install keeper-secrets-manager-cli
+    install_with_pip3 "keeper-secrets-manager-cli"
 else
     echo "Installing keeper-secrets-manager-cli==${VERSION}..."
-    pip3 install --break-system-packages "keeper-secrets-manager-cli==${VERSION}" \
-        || pip3 install "keeper-secrets-manager-cli==${VERSION}"
+    install_with_pip3 "keeper-secrets-manager-cli==${VERSION}"
 fi
 
-pip3 install --break-system-packages json-repair
+install_with_pip3 "json-repair"
 
 echo "KSM CLI installed successfully."
 
