@@ -1,0 +1,30 @@
+{
+    "name": "Keeper Secrets Manager (KSM)",
+    "id": "ksm",
+    "version": "1.0.0",
+    "description": "Installs the Keeper Secrets Manager CLI (ksm) and forwards KSM_CONFIG from the local host environment into the container.",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "latest"
+            ],
+            "default": "latest",
+            "description": "Select the version of KSM CLI to install. Use 'latest' for the most recent version."
+        },
+        "config": {
+            "type": "string",
+            "default": "${localEnv:KSM_CONFIG}",
+            "description": "KSM_CONFIG value to forward into the container. Defaults to the local KSM_CONFIG environment variable."
+        },
+        "secrets": {
+            "type": "string",
+            "default": "",
+            "description": "JSON object mapping environment variable names to Keeper secret references. Format: {ENV_VAR_NAME: keeper/uid/field}. Example: {JASYPT_ENCRYPTOR_PASSWORD: keeper/K9mZx8yW7vU6tS5rQ4pO3n/password}"
+        }
+    },
+
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/python"
+    ]
+}
